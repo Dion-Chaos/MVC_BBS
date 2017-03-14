@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd 
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<context:annotation-config/>
+	<!-- 
+		스프링환경뿐만 아니라 JSP에서도 폼에 파일을 첨부할때
+		encType="multipart/form-data"로 지정된다.
+		이렇게 되면 일반적인 request로는 파일뿐만 아니라
+		파라미터들 또한 못 받는다. 그래서 반드시
+		MultipartRequest객체가 필요한데 다음 아래의 정의가
+		스프링환경에서 사용되는 multipartResolver다.
+	 -->
+	<bean id="multipartResolver" 
+	class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="defaultEncoding" value="utf-8"/>
+		<property name="maxUploadSize" value="-1"/>
+	</bean>
+	   
+    <bean name="/list.inc" 
+    	class="spring.control.ListControl"/>
+    <bean id="write" 
+    	class="spring.control.WriteControl">
+    	<property name="uploadPath" value="/upload"/>
+    </bean>   
+    <bean id="view" 
+    	class="spring.control.ViewControl"/>
+    <bean id="answer" 
+    	class="spring.control.AnswerControl"/>
+        
+    <bean 
+ 	 class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+ 	 	<property name="suffix" value=".jsp"/>
+ 	 	<property name="prefix" value="/jsp/"/>
+ 	 </bean>
+</beans>
+
+
+
+
+
+
+
+

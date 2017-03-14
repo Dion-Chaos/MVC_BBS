@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="bbs">
+
+	<!-- 페이징 기법을 위한 전체 게시물 수를 반환하는 select -->
+	<select id="totalCount" resultType="int" parameterType="String">
+		SELECT COUNT(*)
+		FROM bbs2
+		WHERE bname=#{n} AND status=0
+	</select>
+
+	<!-- 페이징 기법을 활용한 목록 select -->
+	<select id="list" resultType="mybatis.vo.BbsVO" parameterType="java.util.Map">
+		SELECT *
+		FROM (SELECT rownum as r_num, a.*
+			  FROM (SELECT *
+					FROM bbs2
+					WHERE bname=#{bname} AND status=0
+					ORDER BY groups DESC, lev ASC) a 
+		  	  )
+		WHERE r_num BETWEEN #{begin} AND #{end}
+	</select>
+
+	<!-- 원글 저장 기능 -->
+	<insert id="write" parameterType="mybatis.vo.BbsVO">
+		INSERT INTO bbs2(seq,writer,title,content,pwd,hit,groups,step,lev,bname,regdate,uploadFileName,ip,status) 
+			values(bbs2_seq.NEXTVAL, #{writer}, #{title}, #{content}, #{pwd},0,
+				bbs2_group.NEXTVAL,0,0, #{bname},sysdate, #{uploadFileName}, #{ip}, 0)
+	</insert>
+	
+	
+	
+	<!-- 답변을 저장하기 전에 lev값을 1씩 증가시키는 기능
+		(참조글의 groups값이 같고, 참조글의 lev값 보다 큰 lev값들을 1씩 증가) -->
+	<update id="updateLev" parameterType="java.util.Map">
+		UPDATE bbs2
+		SET lev=lev+1
+		WHERE groups = #{groups} AND lev &lt; #{lev}
+	</update>	
+		
+		
+	<!-- 답변 저장 기능 -->
+	<insert id="addAns" parameterType="mybatis.vo.BbsVO">
+		INSERT INTO bbs2(seq,writer,title,content,pwd,hit,groups,step,lev,bname,regdate,uploadFileName,ip,status) 
+			values(bbs2_seq.NEXTVAL, #{writer}, #{title}, #{content}, #{pwd},0,
+				#{groups}, #{step}, #{lev}, #{bname}, sysdate, #{uploadFileName}, #{ip}, 0)
+	</insert>
+
+	<!-- 게시물 보기 기능을 위해 기본키로 검색하는 select -->
+	<select id="getBbs" parameterType="String" resultType="mybatis.vo.BbsVO">
+		SELECT *
+		FROM bbs2
+		WHERE seq=#{no}
+	</select>
+	
+	
+	<!-- 게시물 수정 기능 -->
+	
+	
+	
+	<!-- 게시물 삭제 기능 -->
+	
+</mapper>

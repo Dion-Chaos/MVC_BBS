@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd 
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+
+ 	<context:annotation-config/>
+ 
+ 	<!-- 보안을 위해 직접 쓰지 않고 정보를 가져오도록 properties파일을 활용 -->
+ 	<context:property-placeholder 
+ 	 location="classpath:props/jdbc.properties"/>
+ 	 
+ 	<bean id="ds" 
+ 	class="org.apache.commons.dbcp.BasicDataSource" 
+ 	destroy-method="close">
+ 		<property name="driverClassName"
+ 		 value="${jdbc.driver}"/>
+ 		<property name="url" value="${jdbc.url}"/>
+ 		<property name="username" value="${jdbc.user}"/>
+ 		<property name="password" value="${jdbc.pwd}"/>
+ 	</bean>
+ 	
+ 	<bean id="factory" 
+ 	class="org.mybatis.spring.SqlSessionFactoryBean">
+ 		<property name="dataSource" ref="ds"/>
+ 		
+ 		<!-- 맵퍼들 지정 -->
+ 		<property name="mapperLocations" 
+ 		 value="classpath:mybatis/mapper/*.xml"/>
+ 	</bean>
+ 	
+ 	<bean id="template" 
+ 	 class="org.mybatis.spring.SqlSessionTemplate">
+ 		<constructor-arg ref="factory"/> 
+ 	</bean>
+ 	
+ 	<!-- 사용자가 정의한 객체선언 -->
+ 	<bean id="d_dao" class="mybatis.dao.BbsDAO"/>
+ 	
+ 
+ </beans>
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
